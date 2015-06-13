@@ -25,6 +25,8 @@ AR			= $(prefix)ar
 RANLIB		= $(prefix)ranlib
 OBJCOPY		= $(prefix)objcopy
 
+CN_NAME		= John Doe
+
 %.efi: %.so
 	$(OBJCOPY) -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel \
 			   -j .rela -j .reloc --target=$(FORMAT) $*.so $@
@@ -36,8 +38,22 @@ OBJCOPY		= $(prefix)objcopy
 	$(CC) $(INCLUDES) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 TARGETS = myloader.efi
+KEY = MOK.key MOK.crt
+CERT = MOK.cer
 
 all: $(TARGETS)
 
+sign: $(CERT) $(TARGETS)
+	sbsign --key MOK.key --cert MOK.crt $(TARGETS)
+
+$(CERT): $(KEY)
+	openssl x509 -in MOK.crt -out MOK.cer -outform DER
+
+$(KEY):
+	openssl req -new -x509 -newkey rsa:2048 -keyout MOK.key -out MOK.crt -nodes -days 3650 -subj "/CN=$(CN_NAME)/"
+
 clean:
-	rm -f $(TARGETS)
+	rm -f $(TARGETS) $(TARGETS).signed
+
+clean_key:
+	rm -f $(KEY) $(CERT)
