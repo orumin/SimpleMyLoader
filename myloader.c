@@ -7,7 +7,7 @@ efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
     EFI_DEVICE_PATH *Path;
     EFI_LOADED_IMAGE *LoadedImageParent;
     EFI_LOADED_IMAGE *LoadedImage;
-    EFI_HANDLE *Image;
+    EFI_HANDLE Image;
     CHAR16 *Options = L"root=/dev/sda2 rootfstype=btrfs rw quiet splash";
     EFI_STATUS Status=EFI_SUCCESS;
 
